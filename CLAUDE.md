@@ -21,6 +21,8 @@ All server work happens in `server/`. The project uses **Bun** as package manage
 
 CI (`.github/workflows/ci.yml`) runs bun install → typecheck → tests on every push/PR.
 
+`server/README.md` documents the server's env vars, scripts and module layout — keep it in sync when adding modules or env variables.
+
 Secrets are in `server/.env` (gitignored): `BOT_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BOT_MODE` (`polling`|`webhook`), `PORT`, `WEBHOOK_SECRET`.
 
 ## Architecture

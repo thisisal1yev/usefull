@@ -29,12 +29,9 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 
 ## Structure
 
-- `server/src/config` — env config (`APP_CONFIG` provider)
-- `server/src/db` — Supabase client provider + generated DB types
-- `server/src/users` — `UsersService` (profiles, onboarding)
-- `server/src/bot` — grammY bot (onboarding dialog)
-- `server/src/health` — health endpoint
-- `supabase/migrations` — SQL schema
+- [`server/`](server/README.md) — NestJS backend (bot, API, config, Supabase access) — see its README for architecture, env vars and scripts
+- `supabase/migrations` — SQL schema (10 tables, RLS enabled)
+- `.github/workflows/ci.yml` — CI: bun install → typecheck → tests on every push/PR
 
 ## Roadmap (MVP phases)
 
