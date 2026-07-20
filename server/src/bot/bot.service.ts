@@ -83,7 +83,14 @@ export class BotService implements OnApplicationBootstrap {
             goal: s.goal!,
             availability: s.availability!,
           })
-          await ctx.reply(t(lang, 'done'))
+          await ctx.reply(
+            t(lang, 'done'),
+            this.config.webappUrl
+              ? {
+                  reply_markup: new InlineKeyboard().webApp(t(lang, 'open_app'), this.config.webappUrl),
+                }
+              : undefined,
+          )
           break
         }
       }
@@ -95,6 +102,11 @@ export class BotService implements OnApplicationBootstrap {
   }
 
   onApplicationBootstrap(): void {
+    if (this.config.webappUrl) {
+      void this.bot.api.setChatMenuButton({
+        menu_button: { type: 'web_app', text: 'usfull', web_app: { url: this.config.webappUrl } },
+      })
+    }
     if (this.config.botMode === 'polling') {
       void this.bot.api.deleteWebhook().then(() => this.bot.start())
       this.logger.log('Bot started in polling mode')

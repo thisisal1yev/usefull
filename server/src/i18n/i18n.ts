@@ -7,6 +7,7 @@ export type MessageKey =
   | 'ask_availability'
   | 'done'
   | 'invalid_choice'
+  | 'open_app'
 
 const messages: Record<UiLang, Record<MessageKey, string>> = {
   uz: {
@@ -16,6 +17,7 @@ const messages: Record<UiLang, Record<MessageKey, string>> = {
     ask_availability: 'Qachon mashq qilishga vaqtingiz bor?',
     done: "Profil tayyor! Endi suhbat sherigini topishingiz mumkin. Tez orada: savollar banki va o'qituvchilar.",
     invalid_choice: 'Iltimos, tugmalardan birini tanlang.',
+    open_app: 'Ilovani ochish 📲',
   },
   en: {
     welcome: 'Welcome to usfull!\nTilni tanlang / Choose your language:',
@@ -24,6 +26,7 @@ const messages: Record<UiLang, Record<MessageKey, string>> = {
     ask_availability: 'When are you available to practice?',
     done: 'Profile complete! You can now find a speaking partner. Coming soon: question bank and teachers.',
     invalid_choice: 'Please choose one of the buttons.',
+    open_app: 'Open the app 📲',
   },
 }
 

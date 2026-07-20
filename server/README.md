@@ -22,6 +22,7 @@ bun run dev            # NestJS watch mode, bot polls Telegram
 | `BOT_MODE` | `polling` (local dev) or `webhook` (production) |
 | `PORT` | HTTP port, default `3000` |
 | `WEBHOOK_SECRET` | Secret token for Telegram webhook validation (production) |
+| `WEBAPP_URL` | Optional HTTPS URL of the deployed Mini App; when set the bot installs a `web_app` menu button and adds an "open app" button after onboarding |
 
 ## Scripts
 
@@ -55,9 +56,23 @@ Rules of the codebase:
 - `src/db/types.ts` is generated from the live Supabase schema — regenerate after each migration, never edit by hand.
 - Clients never talk to Supabase directly; RLS is enabled with no policies, this server uses the service-role key.
 
+## Mini App API (`/api/*`)
+
+All `/api/*` endpoints are protected by `TelegramAuthGuard`: the client (the Mini App) must send the raw Telegram Web App `initData` string in the `x-telegram-init-data` header. The guard verifies the HMAC signature against `BOT_TOKEN` (max age 24 h), upserts the user, and puts the `users` row on `req.user`.
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/me` | Current user's `users` row |
+| `GET /api/exam-questions?part=Part 1` | Question bank, newest first (max 50), optional part filter |
+| `POST /api/exam-questions` | Publish a bank question — `teacher`/`admin` roles only |
+| `GET /api/questions` | Community Q&A feed, newest first, removed content excluded |
+| `POST /api/questions` | Ask a community question `{ body }` |
+| `GET /api/questions/:id/answers` | Answers for a question |
+| `POST /api/questions/:id/answers` | Answer a question `{ body }` |
+
 ## Tests
 
-Jest specs live in `test/*.spec.ts` (15 tests): config loading, i18n completeness, onboarding state machine, UsersService (mocked Supabase chain), health endpoint (supertest).
+Jest specs live in `test/*.spec.ts` (29 tests): config loading, i18n completeness, onboarding state machine, UsersService / ExamQuestionsService / CommunityService (mocked Supabase chain), initData validation, `/api/me` controller, health endpoint (supertest).
 
 ## Production webhook
 

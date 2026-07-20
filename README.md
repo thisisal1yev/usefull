@@ -30,13 +30,14 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 ## Structure
 
 - [`server/`](server/README.md) — NestJS backend (bot, API, config, Supabase access) — see its README for architecture, env vars and scripts
+- `webapp/` — Telegram Mini App (Vite + React + TS): question bank + community Q&A, talks to the server via `/api/*`
 - `supabase/migrations` — SQL schema (10 tables, RLS enabled)
 - `.github/workflows/ci.yml` — CI: bun install → typecheck → tests on every push/PR
 
 ## Roadmap (MVP phases)
 
 1. ✅ Bot skeleton, DB schema, onboarding
-2. Mini App: question bank + community Q&A
+2. ✅ Mini App: question bank + community Q&A
 3. Partner matching
 4. Teachers, slots, booking, free-tier limit
 5. Telegram Stars payments, Premium/Gold, coach
