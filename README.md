@@ -12,7 +12,7 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 
 ## Setup
 
-1. `cd server && npm install`
+1. `cd server && bun install` (project uses [Bun](https://bun.sh) as package manager/runner)
 2. Copy `.env.example` → `.env`, fill in:
    - `BOT_TOKEN` — from [@BotFather](https://t.me/BotFather)
    - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` — Supabase project → Settings → API
@@ -22,9 +22,9 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 
 ## Run
 
-- Dev: `npm run dev`
-- Tests: `npm test`
-- Production: `npm run build && npm start`, then register the webhook:
+- Dev: `bun run dev`
+- Tests: `bun run test`
+- Production: `bun run build && bun run start`, then register the webhook:
   `https://api.telegram.org/bot<TOKEN>/setWebhook?url=<HTTPS_URL>/webhook&secret_token=<WEBHOOK_SECRET>`
 
 ## Structure

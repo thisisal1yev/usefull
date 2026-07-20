@@ -10,13 +10,16 @@ The product spec and phase-by-phase implementation plans live in `docs/superpowe
 
 ## Commands
 
-All server work happens in `server/`:
+All server work happens in `server/`. The project uses **Bun** as package manager/script runner (`bun.lock`, no `package-lock.json`):
 
-- `npm run dev` — start NestJS in watch mode (bot runs in polling mode locally)
-- `npm test` — run all Jest tests
-- `npx jest test/machine.spec.ts` — run a single test file
-- `npx tsc --noEmit` — type-check without building
-- `npm run build && npm start` — production build/run (webhook mode)
+- `bun install` — install dependencies
+- `bun run dev` — start NestJS in watch mode (bot runs in polling mode locally)
+- `bun run test` — run all Jest tests
+- `bunx jest test/machine.spec.ts` — run a single test file
+- `bunx tsc --noEmit` — type-check without building
+- `bun run build && bun run start` — production build/run (webhook mode)
+
+CI (`.github/workflows/ci.yml`) runs bun install → typecheck → tests on every push/PR.
 
 Secrets are in `server/.env` (gitignored): `BOT_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BOT_MODE` (`polling`|`webhook`), `PORT`, `WEBHOOK_SECRET`.
 
