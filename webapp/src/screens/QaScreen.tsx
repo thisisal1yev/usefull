@@ -13,6 +13,11 @@ export interface Answer {
   created_at: string
 }
 
+const inputClass =
+  'w-full rounded-lg border border-tg-hint/50 bg-tg-bg p-2.5 text-tg-text placeholder:text-tg-hint'
+const primaryClass =
+  'mt-2 w-full rounded-lg bg-tg-button p-3 text-[15px] font-semibold text-tg-button-text'
+
 export default function QaScreen() {
   const [items, setItems] = useState<CommunityQuestion[] | null>(null)
   const [draft, setDraft] = useState('')
@@ -58,40 +63,44 @@ export default function QaScreen() {
   }
 
   return (
-    <div className="list">
+    <div className="px-3 py-2">
       <textarea
+        className={inputClass}
         placeholder="Savolingizni yozing…"
         value={draft}
         rows={2}
         onChange={(e) => setDraft(e.target.value)}
       />
-      <button className="primary" onClick={ask}>
+      <button className={primaryClass} onClick={ask}>
         Yuborish
       </button>
 
       {items === null ? (
-        <div className="empty">Yuklanmoqda…</div>
+        <div className="px-4 py-8 text-center text-tg-hint">Yuklanmoqda…</div>
       ) : items.length === 0 ? (
-        <div className="empty">Birinchi savolni siz bering!</div>
+        <div className="px-4 py-8 text-center text-tg-hint">Birinchi savolni siz bering!</div>
       ) : (
         items.map((q) => (
-          <div className="card" key={q.id} style={{ marginTop: 12 }}>
+          <div className="mt-3 rounded-xl bg-tg-secondary p-3" key={q.id}>
             <div onClick={() => open(q.id)}>{q.body}</div>
-            <div className="meta">{new Date(q.created_at).toLocaleString()}</div>
+            <div className="mt-1.5 text-xs text-tg-hint">{new Date(q.created_at).toLocaleString()}</div>
             {openId === q.id && (
-              <div style={{ marginTop: 8 }}>
+              <div className="mt-2">
                 {(answers[q.id] ?? []).map((a) => (
-                  <div className="card" key={a.id}>
+                  <div className="mb-2 rounded-xl bg-tg-bg p-3" key={a.id}>
                     <div>{a.body}</div>
-                    <div className="meta">{new Date(a.created_at).toLocaleString()}</div>
+                    <div className="mt-1.5 text-xs text-tg-hint">
+                      {new Date(a.created_at).toLocaleString()}
+                    </div>
                   </div>
                 ))}
                 <input
+                  className={inputClass}
                   placeholder="Javob yozing…"
                   value={answerDraft}
                   onChange={(e) => setAnswerDraft(e.target.value)}
                 />
-                <button className="primary" onClick={() => reply(q.id)}>
+                <button className={primaryClass} onClick={() => reply(q.id)}>
                   Javob berish
                 </button>
               </div>

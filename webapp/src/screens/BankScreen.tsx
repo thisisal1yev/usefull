@@ -25,23 +25,31 @@ export default function BankScreen() {
 
   return (
     <div>
-      <div className="chips">
+      <div className="flex gap-2 p-3">
         {PARTS.map((p) => (
-          <button key={p} className={p === part ? 'active' : ''} onClick={() => setPart(p)}>
+          <button
+            key={p}
+            className={`rounded-full px-3 py-1.5 text-[13px] ${
+              p === part
+                ? 'bg-tg-button text-tg-button-text'
+                : 'border border-tg-hint/50 text-tg-text'
+            }`}
+            onClick={() => setPart(p)}
+          >
             {p}
           </button>
         ))}
       </div>
       {items === null ? (
-        <div className="empty">Yuklanmoqda…</div>
+        <div className="px-4 py-8 text-center text-tg-hint">Yuklanmoqda…</div>
       ) : items.length === 0 ? (
-        <div className="empty">Hozircha savollar yo'q</div>
+        <div className="px-4 py-8 text-center text-tg-hint">Hozircha savollar yo'q</div>
       ) : (
-        <div className="list">
+        <div className="px-3 py-2">
           {items.map((q) => (
-            <div className="card" key={q.id}>
+            <div className="mb-2 rounded-xl bg-tg-secondary p-3" key={q.id}>
               <div>{q.question}</div>
-              <div className="meta">
+              <div className="mt-1.5 text-xs text-tg-hint">
                 {q.part}
                 {q.topic ? ` · ${q.topic}` : ''} ·{' '}
                 {new Date(q.published_at).toLocaleDateString()}
