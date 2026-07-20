@@ -30,7 +30,8 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 ## Structure
 
 - [`server/`](server/README.md) — NestJS backend (bot, API, config, Supabase access) — see its README for architecture, env vars and scripts
-- `webapp/` — Telegram Mini App (Vite + React + TS): question bank + community Q&A, talks to the server via `/api/*`
+- [`webapp/`](webapp/README.md) — Telegram Mini App (Vite + React + TS + Tailwind v4): question bank + community Q&A, talks to the server via `/api/*`. Live: https://usefull-fawn.vercel.app
+- [`deploy/`](deploy/README.md) — VPS deployment: Docker Compose (server + Caddy auto-HTTPS)
 - `supabase/migrations` — SQL schema (10 tables, RLS enabled)
 - `.github/workflows/ci.yml` — CI: bun install → typecheck → tests on every push/PR
 

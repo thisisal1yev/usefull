@@ -10,20 +10,26 @@ The product spec and phase-by-phase implementation plans live in `docs/superpowe
 
 ## Commands
 
-All server work happens in `server/`. The project uses **Bun** as package manager/script runner (`bun.lock`, no `package-lock.json`):
+The project uses **Bun** everywhere as package manager/script runner (`bun.lock`, no `package-lock.json`).
 
-- `bun install` — install dependencies
-- `bun run dev` — start NestJS in watch mode (bot runs in polling mode locally)
-- `bun run test` — run all Jest tests
-- `bunx jest test/machine.spec.ts` — run a single test file
-- `bunx tsc --noEmit` — type-check without building
-- `bun run build && bun run start` — production build/run (webhook mode)
+Server (`server/`, NestJS + Jest):
+
+- `bun run dev` — watch mode (bot polls Telegram locally)
+- `bun run test` / `bunx jest test/machine.spec.ts` — all tests / one file
+- `bunx tsc --noEmit` — type-check
+- `bun run build && bun run start` — production (webhook mode)
+
+Webapp (`webapp/`, Vite + React + Tailwind v4 + Vitest):
+
+- `bun run dev` — Vite dev server on :5173
+- `bun run test` / `bunx vitest run src/screens/BankScreen.test.tsx` — all tests / one file
+- `bun run build` — `tsc -b && vite build`
 
 CI (`.github/workflows/ci.yml`) runs bun install → typecheck → tests on every push/PR.
 
-`server/README.md` documents the server's env vars, scripts and module layout — keep it in sync when adding modules or env variables.
+Per-directory READMEs (`server/README.md`, `webapp/README.md`, `deploy/README.md`) document env vars, scripts and layout — keep them in sync when adding modules or env variables.
 
-Secrets are in `server/.env` (gitignored): `BOT_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BOT_MODE` (`polling`|`webhook`), `PORT`, `WEBHOOK_SECRET`.
+Secrets are in `server/.env` (gitignored): `BOT_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `BOT_MODE` (`polling`|`webhook`), `PORT`, `WEBHOOK_SECRET`, `WEBAPP_URL`. Webapp env: `VITE_API_URL`.
 
 ## Architecture
 
@@ -33,8 +39,10 @@ NestJS (Express platform, CommonJS — no `.js` extensions in imports) + grammY 
 - **DB**: the global `DbModule` provides a `SupabaseClient<Database>` under the `SUPABASE` token, built with the service-role key. `src/db/types.ts` is **generated** from the live schema (Supabase MCP `generate_typescript_types`) — regenerate after every migration, don't hand-edit.
 - **Domain logic is framework-free**: `src/onboarding/machine.ts` (state machine: lang → level → goal → availability → done) and `src/i18n/i18n.ts` (uz/en messages via `t(lang, key)`) have no Nest/grammY imports and carry the unit tests. Bot handlers in `src/bot/bot.service.ts` are thin wiring around them: every inline-keyboard callback uses the `ob:` prefix and goes through `applyInput`.
 - **Bot lifecycle**: `BotService.onApplicationBootstrap` starts polling only when `BOT_MODE=polling`; in webhook mode `main.ts` mounts grammY's `webhookCallback` on `POST /webhook` with `secretToken`.
-- **Data access rule**: clients (future Mini App) never talk to Supabase directly — only this server does, with the service-role key. All tables have RLS enabled with **no policies** (anon access denied by design). Tier limits and moderation are enforced server-side.
+- **Mini App auth**: every `/api/*` endpoint sits behind `TelegramAuthGuard` — the webapp sends raw Telegram `initData` in the `x-telegram-init-data` header; `src/auth/init-data.ts` verifies the HMAC against `BOT_TOKEN` (max age 24 h) and the guard upserts the user onto `req.user`. API modules: `exam-questions` (bank; POST is teacher/admin only), `community` (Q&A), `users/me.controller`.
+- **Data access rule**: the Mini App never talks to Supabase directly — only this server does, with the service-role key. All tables have RLS enabled with **no policies** (anon access denied by design). Tier limits and moderation are enforced server-side.
 - **Schema**: `supabase/migrations/*.sql`, applied via Supabase MCP `apply_migration` (project id `ughjxpljxfqffzhbrozx`). Notable invariants: `users.tg_id` unique (Telegram identity), unique index on `bookings.slot_id` (double-booking guard), `unique (from_user, to_user)` on match_requests.
+- **Webapp**: Tailwind v4 utilities only; colors via `tg-*` tokens mapped from Telegram theme variables in `webapp/src/styles.css`. Deployed on Vercel (https://usefull-fawn.vercel.app); server is deployed to a VPS via `deploy/` (Docker Compose + Caddy auto-HTTPS).
 
 ## Workflow preferences (client)
 
