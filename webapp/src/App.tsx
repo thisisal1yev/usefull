@@ -1,8 +1,6 @@
 import { useState } from 'react'
-
-export function Placeholder({ name }: { name: string }) {
-  return <div className="empty">{name} — coming soon</div>
-}
+import BankScreen from './screens/BankScreen'
+import QaScreen from './screens/QaScreen'
 
 export default function App() {
   const [tab, setTab] = useState<'bank' | 'qa'>('bank')
@@ -16,7 +14,7 @@ export default function App() {
           Q&A
         </button>
       </div>
-      {tab === 'bank' ? <Placeholder name="Savollar banki" /> : <Placeholder name="Q&A" />}
+      {tab === 'bank' ? <BankScreen /> : <QaScreen />}
     </div>
   )
 }
