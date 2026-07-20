@@ -69,6 +69,10 @@ All `/api/*` endpoints are protected by `TelegramAuthGuard`: the client (the Min
 | `POST /api/questions` | Ask a community question `{ body }` |
 | `GET /api/questions/:id/answers` | Answers for a question |
 | `POST /api/questions/:id/answers` | Answer a question `{ body }` |
+| `GET /api/partners?level=B1` | Partner catalog: onboarded users except self, optional level filter (no `tg_id` exposed) |
+| `POST /api/matches` | Send a match request `{ toUserId }` — 409 on duplicate; notifies the target via the bot |
+| `GET /api/matches` | `{ incoming, outgoing }` with embedded profiles |
+| `POST /api/matches/:id/respond` | Recipient accepts/declines `{ accept }`; on accept both sides get each other's contact (`@username` or `tg://user?id=`) |
 
 ## Tests
 
