@@ -6,12 +6,13 @@ import { BotModule } from './bot/bot.module'
 import { AuthModule } from './auth/auth.module'
 import { ExamQuestionsModule } from './exam-questions/exam-questions.module'
 import { CommunityModule } from './community/community.module'
+import { MatchesModule } from './matches/matches.module'
 import { HealthController } from './health/health.controller'
 
 @Module({
   imports: [
     AppConfigModule, DbModule, UsersModule, BotModule,
-    AuthModule, ExamQuestionsModule, CommunityModule,
+    AuthModule, ExamQuestionsModule, CommunityModule, MatchesModule,
   ],
   controllers: [HealthController],
 })

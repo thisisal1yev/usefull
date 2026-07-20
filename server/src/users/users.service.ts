@@ -39,6 +39,12 @@ export class UsersService {
     return data
   }
 
+  async getById(id: string) {
+    const { data, error } = await this.db.from('users').select().eq('id', id).maybeSingle()
+    if (error) throw error
+    return data
+  }
+
   async getByTgId(tgId: number) {
     const { data, error } = await this.db.from('users').select().eq('tg_id', tgId).maybeSingle()
     if (error) throw error
