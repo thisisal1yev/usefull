@@ -1,0 +1,73 @@
+:root {
+  color-scheme: light dark;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, system-ui, sans-serif;
+  background: var(--tg-theme-bg-color, #fff);
+  color: var(--tg-theme-text-color, #111);
+}
+.tabs {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background: var(--tg-theme-bg-color, #fff);
+  border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
+}
+.tabs button {
+  flex: 1;
+  padding: 12px;
+  border: 0;
+  background: none;
+  color: var(--tg-theme-hint-color, #666);
+  font-size: 15px;
+}
+.tabs button.active {
+  color: var(--tg-theme-link-color, #2481cc);
+  border-bottom: 2px solid var(--tg-theme-link-color, #2481cc);
+  font-weight: 600;
+}
+.list { padding: 8px 12px; }
+.card {
+  background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.card .meta { font-size: 12px; color: var(--tg-theme-hint-color, #666); margin-top: 6px; }
+.chips { display: flex; gap: 8px; padding: 8px 12px; }
+.chips button {
+  border: 1px solid var(--tg-theme-hint-color, #ccc);
+  background: none;
+  color: inherit;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.chips button.active {
+  background: var(--tg-theme-button-color, #2481cc);
+  color: var(--tg-theme-button-text-color, #fff);
+  border-color: transparent;
+}
+textarea, input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--tg-theme-hint-color, #ccc);
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+  background: var(--tg-theme-bg-color, #fff);
+  color: inherit;
+}
+.primary {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--tg-theme-button-color, #2481cc);
+  color: var(--tg-theme-button-text-color, #fff);
+  font-size: 15px;
+  font-weight: 600;
+}
+.empty { text-align: center; padding: 32px 16px; color: var(--tg-theme-hint-color, #666); }
