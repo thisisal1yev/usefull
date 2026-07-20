@@ -19,7 +19,8 @@ const langKeyboard = new InlineKeyboard().text("O'zbekcha 🇺🇿", 'ob:uz').te
 function choiceKeyboard(values: readonly string[]): InlineKeyboard {
   const kb = new InlineKeyboard()
   values.forEach((v, i) => {
-    kb.text(v === v.toLowerCase() ? v[0].toUpperCase() + v.slice(1) : v, `ob:${v}`)
+    const label = v === 'ielts' ? 'IELTS' : v === v.toLowerCase() ? v[0].toUpperCase() + v.slice(1) : v
+    kb.text(label, `ob:${v}`)
     if (i % 2 === 1) kb.row()
   })
   return kb
