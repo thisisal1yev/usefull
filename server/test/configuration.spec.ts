@@ -22,4 +22,9 @@ describe('loadConfig', () => {
     expect(c.botMode).toBe('webhook')
     expect(c.port).toBe(8080)
   })
+
+  it('reads optional WEBAPP_URL', () => {
+    expect(loadConfig(base).webappUrl).toBeUndefined()
+    expect(loadConfig({ ...base, WEBAPP_URL: 'https://app.usfull.uz' }).webappUrl).toBe('https://app.usfull.uz')
+  })
 })

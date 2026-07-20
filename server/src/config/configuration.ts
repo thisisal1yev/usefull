@@ -7,6 +7,7 @@ export interface Config {
   botMode: 'polling' | 'webhook'
   port: number
   webhookSecret: string | undefined
+  webappUrl: string | undefined
 }
 
 export function loadConfig(env: Record<string, string | undefined> = process.env): Config {
@@ -22,5 +23,6 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     botMode: env.BOT_MODE === 'webhook' ? 'webhook' : 'polling',
     port: Number(env.PORT ?? 3000),
     webhookSecret: env.WEBHOOK_SECRET || undefined,
+    webappUrl: env.WEBAPP_URL || undefined,
   }
 }
