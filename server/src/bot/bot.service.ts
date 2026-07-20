@@ -39,6 +39,14 @@ export class BotService implements OnApplicationBootstrap {
     this.wire()
   }
 
+  async notify(tgId: number, text: string): Promise<void> {
+    try {
+      await this.bot.api.sendMessage(tgId, text)
+    } catch (err) {
+      this.logger.warn(`notify failed for ${tgId}: ${String(err)}`)
+    }
+  }
+
   private wire(): void {
     this.bot.use(session({ initial: (): SessionData => ({ onboarding: initialState }) }))
 
