@@ -24,6 +24,13 @@ export type MessageKey =
   | 'booking_new_for_teacher'
   | 'booking_cancelled'
   | 'reminder'
+  | 'upgrade_intro'
+  | 'payment_success_premium'
+  | 'payment_success_gold'
+  | 'plan_expired'
+  | 'admin_new_gold'
+  | 'coach_assigned_learner'
+  | 'coach_assigned_coach'
 
 const messages: Record<UiLang, Record<MessageKey, string>> = {
   uz: {
@@ -50,6 +57,13 @@ const messages: Record<UiLang, Record<MessageKey, string>> = {
     booking_new_for_teacher: "📚 Yangi dars: {name} {time} da darsingizni band qildi.",
     booking_cancelled: "❌ {time} dagi dars bekor qilindi ({name}).",
     reminder: "⏰ Eslatma: {time} da {name} bilan darsingiz bor.",
+    upgrade_intro: "Tarifni tanlang:\n⭐ Premium — haftasiga 3 ta bepul dars\n👑 Gold — Premium + shaxsiy murabbiy",
+    payment_success_premium: "✅ Premium faollashtirildi! Amal qilish muddati: {until}. Endi haftasiga 3 ta dars band qilishingiz mumkin.",
+    payment_success_gold: "👑 Gold faollashtirildi! Amal qilish muddati: {until}. Tez orada admin sizga shaxsiy murabbiy biriktiradi.",
+    plan_expired: "Tarifingiz muddati tugadi — Free tarifga qaytdingiz. Yangilash: /premium",
+    admin_new_gold: "👑 Yangi Gold obunachi: {name}. Murabbiy biriktiring (Admin panel).",
+    coach_assigned_learner: "👑 Sizga shaxsiy murabbiy biriktirildi: {name}. Yozing: {contact}",
+    coach_assigned_coach: "Sizga yangi o'quvchi biriktirildi: {name}. Yozing: {contact}",
   },
   en: {
     welcome: 'Welcome to usfull!\nTilni tanlang / Choose your language:',
@@ -75,6 +89,13 @@ const messages: Record<UiLang, Record<MessageKey, string>> = {
     booking_new_for_teacher: '📚 New lesson: {name} booked your slot at {time}.',
     booking_cancelled: '❌ The lesson at {time} was cancelled ({name}).',
     reminder: '⏰ Reminder: you have a lesson with {name} at {time}.',
+    upgrade_intro: "Choose your plan:\n⭐ Premium — 3 free lessons per week\n👑 Gold — Premium + a personal coach",
+    payment_success_premium: "✅ Premium activated! Valid until {until}. You can now book 3 lessons per week.",
+    payment_success_gold: "👑 Gold activated! Valid until {until}. An admin will assign your personal coach soon.",
+    plan_expired: "Your plan has expired — you are back on Free. Renew: /premium",
+    admin_new_gold: "👑 New Gold subscriber: {name}. Assign a coach (Admin panel).",
+    coach_assigned_learner: "👑 Your personal coach is assigned: {name}. Say hi: {contact}",
+    coach_assigned_coach: "A new student is assigned to you: {name}. Say hi: {contact}",
   },
 }
 
