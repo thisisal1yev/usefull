@@ -23,6 +23,13 @@ describe('loadConfig', () => {
     expect(c.port).toBe(8080)
   })
 
+  it('reads star prices with defaults', () => {
+    const c = loadConfig(base)
+    expect(c.premiumStars).toBe(350)
+    expect(c.goldStars).toBe(1000)
+    expect(loadConfig({ ...base, PREMIUM_STARS: '500' }).premiumStars).toBe(500)
+  })
+
   it('reads optional WEBAPP_URL', () => {
     expect(loadConfig(base).webappUrl).toBeUndefined()
     expect(loadConfig({ ...base, WEBAPP_URL: 'https://app.usfull.uz' }).webappUrl).toBe('https://app.usfull.uz')
