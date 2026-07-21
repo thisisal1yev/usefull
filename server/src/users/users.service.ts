@@ -50,4 +50,10 @@ export class UsersService {
     if (error) throw error
     return data
   }
+
+  async listAdmins() {
+    const { data, error } = await this.db.from('users').select('tg_id, ui_lang').eq('role', 'admin')
+    if (error) throw error
+    return data
+  }
 }
