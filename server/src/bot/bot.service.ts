@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { Bot, Context, InlineKeyboard, session, SessionFlavor } from 'grammy'
+import { BillingService, Tier } from '../billing/billing.service'
 import { APP_CONFIG } from '../config/config.module'
 import { Config } from '../config/configuration'
 import { t, tf, UiLang } from '../i18n/i18n'
@@ -38,6 +39,7 @@ export class BotService implements OnApplicationBootstrap {
     @Inject(APP_CONFIG) private readonly config: Config,
     private readonly users: UsersService,
     private readonly teachers: TeachersService,
+    private readonly billing: BillingService,
   ) {
     this.bot = new Bot<BotContext>(config.botToken)
     this.wire()
@@ -153,6 +155,66 @@ export class BotService implements OnApplicationBootstrap {
           )
           break
         }
+      }
+    })
+
+    this.bot.command('premium', async (ctx) => {
+      if (!ctx.from) return
+      const me = await this.users.upsertFromTelegram({
+        id: ctx.from.id, first_name: ctx.from.first_name, username: ctx.from.username,
+      })
+      const lang: UiLang = (me.ui_lang as UiLang) ?? 'uz'
+      const kb = new InlineKeyboard()
+        .text(`⭐ Premium — ${this.config.premiumStars}`, 'buy:premium')
+        .row()
+        .text(`👑 Gold — ${this.config.goldStars}`, 'buy:gold')
+      await ctx.reply(t(lang, 'upgrade_intro'), { reply_markup: kb })
+    })
+
+    this.bot.callbackQuery(/^buy:(premium|gold)$/, async (ctx) => {
+      await ctx.answerCallbackQuery()
+      const tier = ctx.match[1] as Tier
+      const amount = tier === 'gold' ? this.config.goldStars : this.config.premiumStars
+      const title = tier === 'gold' ? 'Gold' : 'Premium'
+      await ctx.api.sendInvoice(
+        ctx.chat!.id,
+        title,
+        `usfull ${title} — 30 days`,
+        JSON.stringify({ tier }),
+        'XTR',
+        [{ label: title, amount }],
+      )
+    })
+
+    this.bot.on('pre_checkout_query', async (ctx) => {
+      await ctx.answerPreCheckoutQuery(true)
+    })
+
+    this.bot.on('message:successful_payment', async (ctx) => {
+      if (!ctx.from) return
+      const sp = ctx.message.successful_payment
+      let tier: Tier = 'premium'
+      try {
+        tier = (JSON.parse(sp.invoice_payload) as { tier: Tier }).tier
+      } catch {
+        this.logger.warn(`unparseable invoice payload: ${sp.invoice_payload}`)
+      }
+      const outcome = await this.billing.recordPayment(ctx.from.id, tier, sp.telegram_payment_charge_id)
+      if (outcome.result !== 'recorded' || !outcome.user) return
+      const lang: UiLang = (outcome.user.ui_lang as UiLang) ?? 'uz'
+      const until = String(outcome.user.plan_expires_at).slice(0, 10)
+      await ctx.reply(
+        tf(lang, tier === 'gold' ? 'payment_success_gold' : 'payment_success_premium', { until }),
+      )
+      if (tier === 'gold') {
+        const admins = await this.users.listAdmins()
+        await Promise.all(
+          admins.map((a) =>
+            this.notify(a.tg_id, tf((a.ui_lang as UiLang) ?? 'uz', 'admin_new_gold', {
+              name: outcome.user!.first_name,
+            })),
+          ),
+        )
       }
     })
 
