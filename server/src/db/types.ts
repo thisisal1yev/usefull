@@ -61,6 +61,8 @@ export type Database = {
           created_at: string
           id: string
           learner_id: string
+          reminded_1h: boolean
+          reminded_24h: boolean
           slot_id: string
           status: Database["public"]["Enums"]["booking_status"]
           type: Database["public"]["Enums"]["booking_type"]
@@ -69,6 +71,8 @@ export type Database = {
           created_at?: string
           id?: string
           learner_id: string
+          reminded_1h?: boolean
+          reminded_24h?: boolean
           slot_id: string
           status?: Database["public"]["Enums"]["booking_status"]
           type: Database["public"]["Enums"]["booking_type"]
@@ -77,6 +81,8 @@ export type Database = {
           created_at?: string
           id?: string
           learner_id?: string
+          reminded_1h?: boolean
+          reminded_24h?: boolean
           slot_id?: string
           status?: Database["public"]["Enums"]["booking_status"]
           type?: Database["public"]["Enums"]["booking_type"]
