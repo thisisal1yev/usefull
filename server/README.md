@@ -69,6 +69,16 @@ All `/api/*` endpoints are protected by `TelegramAuthGuard`: the client (the Min
 | `POST /api/questions` | Ask a community question `{ body }` |
 | `GET /api/questions/:id/answers` | Answers for a question |
 | `POST /api/questions/:id/answers` | Answer a question `{ body }` |
+| `GET /api/teachers` | Approved teachers with profiles |
+| `POST /api/teachers/apply` | Apply as a teacher (also available via the bot's `/teacher` dialog) |
+| `GET /api/teachers/me` | My teacher application/profile (or null) |
+| `GET /api/teachers/:id/slots` | Teacher's free future slots |
+| `POST /api/slots` | Create a 60-min slot `{ startsAt }` — approved teachers only |
+| `GET /api/slots/mine` / `DELETE /api/slots/:id` | Manage own slots (delete only unbooked) |
+| `POST /api/bookings` | Book a slot `{ slotId }` — free-tier limit: 1 per rolling 7 days (premium: 3) → 403 `weekly_limit`; busy slot → 409 |
+| `GET /api/bookings` / `DELETE /api/bookings/:id` | My lessons / cancel (frees the slot, notifies the other side) |
+| `GET /api/admin/teachers?status=` | Admin: list teacher applications |
+| `POST /api/admin/teachers/:userId/status` | Admin: approve/reject (promotes role, notifies applicant) |
 | `GET /api/partners?level=B1` | Partner catalog: onboarded users except self, optional level filter (no `tg_id` exposed) |
 | `POST /api/matches` | Send a match request `{ toUserId }` — 409 on duplicate; notifies the target via the bot |
 | `GET /api/matches` | `{ incoming, outgoing }` with embedded profiles |
@@ -77,6 +87,10 @@ All `/api/*` endpoints are protected by `TelegramAuthGuard`: the client (the Min
 ## Tests
 
 Jest specs live in `test/*.spec.ts` (29 tests): config loading, i18n completeness, onboarding state machine, UsersService / ExamQuestionsService / CommunityService (mocked Supabase chain), initData validation, `/api/me` controller, health endpoint (supertest).
+
+## Reminders
+
+`RemindersService` (`@nestjs/schedule`, cron every 10 min) sends lesson reminders to both sides when a booking enters the 24-hour and 1-hour windows; `bookings.reminded_24h` / `reminded_1h` flags guarantee each fires once.
 
 ## Production webhook
 
