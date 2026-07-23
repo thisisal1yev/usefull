@@ -14,6 +14,7 @@ const goldUsers = [{ id: 'g1', first_name: 'Gulnora', username: 'gulnora' }]
 const apiMock = vi.fn(async (path: string, init?: RequestInit) => {
   if (init?.method === 'POST') return { user_id: 'u9', status: 'approved' }
   if (path === '/api/admin/gold') return goldUsers
+  if (path === '/api/admin/reports') return { questions: [{ id: 'q1', body: 'bad question', reports: 2 }], answers: [] }
   return pending
 })
 
@@ -55,5 +56,27 @@ describe('AdminScreen', () => {
       expect(apiMock).toHaveBeenCalledWith('/api/admin/coach', expect.objectContaining({ method: 'POST' })),
     )
     await waitFor(() => expect(screen.queryByText('Gulnora')).not.toBeInTheDocument())
+  })
+
+  it('lists reported content and removes it', async () => {
+    render(<AdminScreen />)
+    await waitFor(() => expect(screen.getByText('bad question')).toBeInTheDocument())
+    fireEvent.click(screen.getByText("O'chirish"))
+    await waitFor(() =>
+      expect(apiMock).toHaveBeenCalledWith('/api/admin/moderate', expect.objectContaining({ method: 'POST' })),
+    )
+    await waitFor(() => expect(screen.queryByText('bad question')).not.toBeInTheDocument())
+  })
+
+  it('publishes an exam question', async () => {
+    render(<AdminScreen />)
+    await waitFor(() => screen.getByText(/Savol qo/))
+    fireEvent.change(screen.getByPlaceholderText(/savol matni/i), {
+      target: { value: 'Describe your favourite book.' },
+    })
+    fireEvent.click(screen.getByText("Qo'shish"))
+    await waitFor(() =>
+      expect(apiMock).toHaveBeenCalledWith('/api/exam-questions', expect.objectContaining({ method: 'POST' })),
+    )
   })
 })

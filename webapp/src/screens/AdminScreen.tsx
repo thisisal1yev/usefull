@@ -15,10 +15,19 @@ export interface GoldLearner {
   username: string | null
 }
 
+export interface ReportedItem {
+  id: string
+  body: string
+  reports: number
+}
+
 export default function AdminScreen() {
   const [items, setItems] = useState<PendingTeacher[] | null>(null)
   const [gold, setGold] = useState<GoldLearner[] | null>(null)
   const [coachDrafts, setCoachDrafts] = useState<Record<string, string>>({})
+  const [reports, setReports] = useState<{ questions: ReportedItem[]; answers: ReportedItem[] }>({ questions: [], answers: [] })
+  const [q, setQ] = useState({ part: 'Part 1', topic: '', question: '' })
+  const [qNotice, setQNotice] = useState<string | null>(null)
 
   const load = () => {
     api<PendingTeacher[]>('/api/admin/teachers?status=pending')
@@ -27,6 +36,9 @@ export default function AdminScreen() {
     api<GoldLearner[]>('/api/admin/gold')
       .then(setGold)
       .catch(() => setGold([]))
+    api<{ questions: ReportedItem[]; answers: ReportedItem[] }>('/api/admin/reports')
+      .then(setReports)
+      .catch(() => setReports({ questions: [], answers: [] }))
   }
 
   useEffect(load, [])
@@ -47,6 +59,27 @@ export default function AdminScreen() {
       body: JSON.stringify({ learnerId, coachUsername }),
     }).catch(() => undefined)
     setGold((list) => (list ?? []).filter((g) => g.id !== learnerId))
+  }
+
+  const moderate = async (targetType: 'question' | 'answer', targetId: string) => {
+    await api('/api/admin/moderate', {
+      method: 'POST',
+      body: JSON.stringify({ targetType, targetId }),
+    }).catch(() => undefined)
+    setReports((r) => ({
+      questions: targetType === 'question' ? r.questions.filter((x) => x.id !== targetId) : r.questions,
+      answers: targetType === 'answer' ? r.answers.filter((x) => x.id !== targetId) : r.answers,
+    }))
+  }
+
+  const publish = async () => {
+    if (q.question.trim().length < 5) return
+    await api('/api/exam-questions', {
+      method: 'POST',
+      body: JSON.stringify({ part: q.part, topic: q.topic || undefined, question: q.question.trim() }),
+    }).catch(() => undefined)
+    setQ({ part: 'Part 1', topic: '', question: '' })
+    setQNotice('Qo\'shildi ✅')
   }
 
   if (items === null) {
@@ -115,6 +148,60 @@ export default function AdminScreen() {
           </div>
         ))
       )}
+
+      <h2 className="mt-4 mb-1 text-sm font-semibold text-tg-hint">Shikoyatlar</h2>
+      {reports.questions.length === 0 && reports.answers.length === 0 ? (
+        <div className="py-4 text-center text-tg-hint">Shikoyatlar yo'q</div>
+      ) : (
+        [...reports.questions.map((x) => ({ ...x, type: 'question' as const })),
+         ...reports.answers.map((x) => ({ ...x, type: 'answer' as const }))].map((item) => (
+          <div className="mb-2 rounded-xl bg-tg-secondary p-3" key={`${item.type}-${item.id}`}>
+            <div className="text-sm">{item.body}</div>
+            <div className="mt-1 text-xs text-tg-hint">
+              {item.type === 'question' ? 'Savol' : 'Javob'} · {item.reports} shikoyat
+            </div>
+            <button
+              className="mt-2 rounded-lg border border-tg-hint/50 px-3 py-1.5 text-sm text-tg-text"
+              onClick={() => moderate(item.type, item.id)}
+            >
+              O'chirish
+            </button>
+          </div>
+        ))
+      )}
+
+      <h2 className="mt-4 mb-1 text-sm font-semibold text-tg-hint">Savol qo'shish</h2>
+      <div className="rounded-xl bg-tg-secondary p-3">
+        <select
+          className="w-full rounded-lg border border-tg-hint/50 bg-tg-bg p-2.5 text-tg-text"
+          value={q.part}
+          onChange={(e) => setQ((s) => ({ ...s, part: e.target.value }))}
+        >
+          <option>Part 1</option>
+          <option>Part 2</option>
+          <option>Part 3</option>
+        </select>
+        <input
+          className="mt-2 w-full rounded-lg border border-tg-hint/50 bg-tg-bg p-2.5 text-tg-text placeholder:text-tg-hint"
+          placeholder="mavzu (ixtiyoriy)"
+          value={q.topic}
+          onChange={(e) => setQ((s) => ({ ...s, topic: e.target.value }))}
+        />
+        <textarea
+          className="mt-2 w-full rounded-lg border border-tg-hint/50 bg-tg-bg p-2.5 text-tg-text placeholder:text-tg-hint"
+          placeholder="savol matni"
+          rows={2}
+          value={q.question}
+          onChange={(e) => setQ((s) => ({ ...s, question: e.target.value }))}
+        />
+        <button
+          className="mt-2 w-full rounded-lg bg-tg-button p-2.5 text-sm font-semibold text-tg-button-text"
+          onClick={publish}
+        >
+          Qo'shish
+        </button>
+        {qNotice && <div className="mt-2 text-center text-sm text-tg-hint">{qNotice}</div>}
+      </div>
     </div>
   )
 }
