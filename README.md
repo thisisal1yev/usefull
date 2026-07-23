@@ -7,6 +7,8 @@
 - 💬 **Community Q&A** — ask language questions, answer others, newest first
 - 👩‍🏫 **Teacher sessions** — 1 free session per rolling 7 days; more on **Premium**
 - ⭐ **Gold** — everything in Premium plus a personal support coach
+- 🎁 **Invite friends** — referral links earn Premium days (2/5/10/20 friends → 1/7/30/90 days)
+- 👤 **Profile** — practice streak, progress counts, lesson history
 
 Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS on). Payments: **Telegram Stars**. UI languages: **uz / en**.
 

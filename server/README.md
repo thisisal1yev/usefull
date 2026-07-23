@@ -24,6 +24,7 @@ bun run dev            # NestJS watch mode, bot polls Telegram
 | `WEBHOOK_SECRET` | Secret token for Telegram webhook validation (production) |
 | `WEBAPP_URL` | Optional HTTPS URL of the deployed Mini App; when set the bot installs a `web_app` menu button and adds an "open app" button after onboarding |
 | `PREMIUM_STARS` / `GOLD_STARS` | Subscription prices in Telegram Stars (defaults 350 / 1000) |
+| `BOT_USERNAME` | Bot username without `@` — used to build referral invite links (`t.me/<BOT_USERNAME>?start=ref_<code>`) |
 
 ## Scripts
 
@@ -90,6 +91,16 @@ All `/api/*` endpoints are protected by `TelegramAuthGuard`: the client (the Min
 | `POST /api/matches` | Send a match request `{ toUserId }` — 409 on duplicate; notifies the target via the bot |
 | `GET /api/matches` | `{ incoming, outgoing }` with embedded profiles |
 | `POST /api/matches/:id/respond` | Recipient accepts/declines `{ accept }`; on accept both sides get each other's contact (`@username` or `tg://user?id=`) |
+| `GET /api/referrals/me` | My referral summary: invite link, invited count, Premium days earned, reward tiers, invited list |
+| `GET /api/profile` | Profile overview: `streak`, `progress { lessons, partners }`, `history` (past lessons) |
+
+## Referrals
+
+Each user gets a share link `t.me/<BOT_USERNAME>?start=ref_<code>`. When a **brand-new** user first `/start`s the bot via that link, the referrer is credited (`referrals.invited_id` is unique, so each person counts once; self-referral and existing users don't count). Reward tiers grant Premium days once each: 2 friends → 1 day, 5 → 7, 10 → 30, 20 → 90 (`users.ref_rewarded_count` guards against re-granting). Days extend the plan from `max(now, current expiry)` and never downgrade an existing tier.
+
+## Profile overview
+
+`GET /api/profile` derives everything from existing tables (no new schema). **Streak** = consecutive days ending today or yesterday (grace) on which the user either booked a lesson or got an accepted match; dates are UTC. **Progress** counts total bookings and accepted matches. **History** lists past lessons (slot `starts_at` < now); off-platform partner calls are not tracked.
 
 ## Tests
 
