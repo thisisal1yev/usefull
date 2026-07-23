@@ -7,6 +7,7 @@ const answers = [{ id: 'a1', body: 'Practice daily', created_at: '2026-07-20T01:
 
 vi.mock('../api', () => ({
   api: vi.fn(async (path: string, init?: RequestInit) => {
+    if (path === '/api/report') return { result: 'reported' }
     if (init?.method === 'POST') return { id: 'new' }
     if (path.endsWith('/answers')) return answers
     return questions
@@ -16,7 +17,9 @@ vi.mock('../api', () => ({
 import { api } from '../api'
 
 describe('QaScreen', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('renders the questions feed', async () => {
     render(<QaScreen />)
@@ -39,6 +42,15 @@ describe('QaScreen', () => {
     fireEvent.click(screen.getByText(/yuborish/i))
     await waitFor(() =>
       expect(api).toHaveBeenCalledWith('/api/questions', expect.objectContaining({ method: 'POST' })),
+    )
+  })
+
+  it('reports a question', async () => {
+    render(<QaScreen />)
+    await waitFor(() => screen.getByText('How to improve fluency?'))
+    fireEvent.click(screen.getAllByText('Shikoyat')[0])
+    await waitFor(() =>
+      expect(api).toHaveBeenCalledWith('/api/report', expect.objectContaining({ method: 'POST' })),
     )
   })
 })

@@ -24,6 +24,7 @@ export default function QaScreen() {
   const [openId, setOpenId] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, Answer[]>>({})
   const [answerDraft, setAnswerDraft] = useState('')
+  const [reported, setReported] = useState<Set<string>>(new Set())
 
   const load = () => {
     api<CommunityQuestion[]>('/api/questions')
@@ -62,6 +63,14 @@ export default function QaScreen() {
     setAnswers((a) => ({ ...a, [id]: list }))
   }
 
+  const report = async (targetType: 'question' | 'answer', targetId: string) => {
+    setReported((s) => new Set(s).add(targetId))
+    await api('/api/report', {
+      method: 'POST',
+      body: JSON.stringify({ targetType, targetId }),
+    }).catch(() => undefined)
+  }
+
   return (
     <div className="px-3 py-2">
       <textarea
@@ -83,7 +92,16 @@ export default function QaScreen() {
         items.map((q) => (
           <div className="mt-3 rounded-xl bg-tg-secondary p-3" key={q.id}>
             <div onClick={() => open(q.id)}>{q.body}</div>
-            <div className="mt-1.5 text-xs text-tg-hint">{new Date(q.created_at).toLocaleString()}</div>
+            <div className="mt-1.5 text-xs text-tg-hint">
+              {new Date(q.created_at).toLocaleString()}
+              <button
+                className="ml-2 text-xs text-tg-hint underline"
+                disabled={reported.has(q.id)}
+                onClick={() => report('question', q.id)}
+              >
+                {reported.has(q.id) ? 'Shikoyat yuborildi' : 'Shikoyat'}
+              </button>
+            </div>
             {openId === q.id && (
               <div className="mt-2">
                 {(answers[q.id] ?? []).map((a) => (
@@ -91,6 +109,13 @@ export default function QaScreen() {
                     <div>{a.body}</div>
                     <div className="mt-1.5 text-xs text-tg-hint">
                       {new Date(a.created_at).toLocaleString()}
+                      <button
+                        className="ml-2 text-xs text-tg-hint underline"
+                        disabled={reported.has(a.id)}
+                        onClick={() => report('answer', a.id)}
+                      >
+                        {reported.has(a.id) ? 'Shikoyat yuborildi' : 'Shikoyat'}
+                      </button>
                     </div>
                   </div>
                 ))}
