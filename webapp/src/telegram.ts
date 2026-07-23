@@ -3,6 +3,7 @@ interface TelegramWebApp {
   ready: () => void
   expand: () => void
   colorScheme?: 'light' | 'dark'
+  openInvoice?: (url: string, callback?: (status: string) => void) => void
 }
 
 declare global {
@@ -20,4 +21,6 @@ export const tg: TelegramWebApp = {
   },
   ready: () => window.Telegram?.WebApp.ready(),
   expand: () => window.Telegram?.WebApp.expand(),
+  openInvoice: (url: string, callback?: (status: string) => void) =>
+    window.Telegram?.WebApp.openInvoice?.(url, callback),
 }
