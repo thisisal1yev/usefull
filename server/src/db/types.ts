@@ -249,6 +249,38 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          created_at: string
+          id: string
+          reporter_id: string
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reporter_id: string
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reporter_id?: string
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["report_target"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           created_at: string
@@ -415,6 +447,7 @@ export type Database = {
       exam_type: "ielts" | "sat"
       match_status: "pending" | "accepted" | "declined"
       plan_tier: "free" | "premium" | "gold"
+      report_target: "question" | "answer"
       teacher_status: "pending" | "approved" | "rejected"
       ui_lang: "uz" | "en"
       user_role: "learner" | "teacher" | "coach" | "admin"
@@ -550,6 +583,7 @@ export const Constants = {
       exam_type: ["ielts", "sat"],
       match_status: ["pending", "accepted", "declined"],
       plan_tier: ["free", "premium", "gold"],
+      report_target: ["question", "answer"],
       teacher_status: ["pending", "approved", "rejected"],
       ui_lang: ["uz", "en"],
       user_role: ["learner", "teacher", "coach", "admin"],
