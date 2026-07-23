@@ -31,6 +31,8 @@ export type MessageKey =
   | 'admin_new_gold'
   | 'coach_assigned_learner'
   | 'coach_assigned_coach'
+  | 'referral_joined'
+  | 'referral_reward'
 
 const messages: Record<UiLang, Record<MessageKey, string>> = {
   uz: {
@@ -64,6 +66,8 @@ const messages: Record<UiLang, Record<MessageKey, string>> = {
     admin_new_gold: "👑 Yangi Gold obunachi: {name}. Murabbiy biriktiring (Admin panel).",
     coach_assigned_learner: "👑 Sizga shaxsiy murabbiy biriktirildi: {name}. Yozing: {contact}",
     coach_assigned_coach: "Sizga yangi o'quvchi biriktirildi: {name}. Yozing: {contact}",
+    referral_joined: "🎉 {name} sizning taklifingiz bilan qo'shildi! Rahmat.",
+    referral_reward: "🎁 Tabriklaymiz! Siz {days} kun Premium yutdingiz.",
   },
   en: {
     welcome: 'Welcome to usfull!\nTilni tanlang / Choose your language:',
@@ -96,6 +100,8 @@ const messages: Record<UiLang, Record<MessageKey, string>> = {
     admin_new_gold: "👑 New Gold subscriber: {name}. Assign a coach (Admin panel).",
     coach_assigned_learner: "👑 Your personal coach is assigned: {name}. Say hi: {contact}",
     coach_assigned_coach: "A new student is assigned to you: {name}. Say hi: {contact}",
+    referral_joined: '🎉 {name} joined with your invite! Thank you.',
+    referral_reward: '🎁 Congrats! You earned {days} days of Premium.',
   },
 }
 

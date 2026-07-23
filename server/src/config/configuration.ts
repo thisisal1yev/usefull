@@ -8,6 +8,7 @@ export interface Config {
   port: number
   webhookSecret: string | undefined
   webappUrl: string | undefined
+  botUsername: string | undefined
   premiumStars: number
   goldStars: number
 }
@@ -26,6 +27,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     port: Number(env.PORT ?? 3000),
     webhookSecret: env.WEBHOOK_SECRET || undefined,
     webappUrl: env.WEBAPP_URL || undefined,
+    botUsername: env.BOT_USERNAME || undefined,
     premiumStars: Number(env.PREMIUM_STARS ?? 350),
     goldStars: Number(env.GOLD_STARS ?? 1000),
   }

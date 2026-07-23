@@ -34,4 +34,9 @@ describe('loadConfig', () => {
     expect(loadConfig(base).webappUrl).toBeUndefined()
     expect(loadConfig({ ...base, WEBAPP_URL: 'https://app.usfull.uz' }).webappUrl).toBe('https://app.usfull.uz')
   })
+
+  it('reads optional BOT_USERNAME', () => {
+    expect(loadConfig(base).botUsername).toBeUndefined()
+    expect(loadConfig({ ...base, BOT_USERNAME: 'usefull_bot' }).botUsername).toBe('usefull_bot')
+  })
 })

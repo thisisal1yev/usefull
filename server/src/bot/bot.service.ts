@@ -7,6 +7,7 @@ import { t, tf, UiLang } from '../i18n/i18n'
 import {
   initialState, applyInput, LEVELS, GOALS, AVAILABILITIES, OnboardingState,
 } from '../onboarding/machine'
+import { ReferralsService } from '../referrals/referrals.service'
 import { applyInitial, applyTeacherInput, TeacherApplyState } from '../teachers/apply-machine'
 import { TeachersService } from '../teachers/teachers.service'
 import { UsersService } from '../users/users.service'
@@ -40,6 +41,7 @@ export class BotService implements OnApplicationBootstrap {
     private readonly users: UsersService,
     private readonly teachers: TeachersService,
     private readonly billing: BillingService,
+    private readonly referrals: ReferralsService,
   ) {
     this.bot = new Bot<BotContext>(config.botToken)
     this.wire()
@@ -58,11 +60,25 @@ export class BotService implements OnApplicationBootstrap {
 
     this.bot.command('start', async (ctx) => {
       if (!ctx.from) return
-      await this.users.upsertFromTelegram({
+      const existing = await this.users.getByTgId(ctx.from.id)
+      const me = await this.users.upsertFromTelegram({
         id: ctx.from.id,
         first_name: ctx.from.first_name,
         username: ctx.from.username,
       })
+      const payload = typeof ctx.match === 'string' ? ctx.match : ''
+      if (!existing && payload.startsWith('ref_')) {
+        const result = await this.referrals
+          .recordReferral(payload.slice(4), me.id)
+          .catch(() => ({ credited: false as const }))
+        if (result.credited && 'referrer' in result && result.referrer) {
+          const lang: UiLang = (result.referrer.ui_lang as UiLang) ?? 'uz'
+          await this.notify(result.referrer.tg_id, tf(lang, 'referral_joined', { name: me.first_name }))
+          if (result.rewardDays && result.rewardDays > 0) {
+            await this.notify(result.referrer.tg_id, tf(lang, 'referral_reward', { days: String(result.rewardDays) }))
+          }
+        }
+      }
       ctx.session.onboarding = initialState
       await ctx.reply(t('uz', 'welcome'), { reply_markup: langKeyboard })
     })
