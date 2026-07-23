@@ -1,19 +1,21 @@
 @import 'tailwindcss';
 
-/* Telegram theme variables mapped to Tailwind color tokens.
-   Fallbacks keep the app usable outside Telegram. */
-@theme inline {
-  --color-tg-bg: var(--tg-theme-bg-color, #ffffff);
-  --color-tg-text: var(--tg-theme-text-color, #111111);
-  --color-tg-hint: var(--tg-theme-hint-color, #6b7280);
-  --color-tg-link: var(--tg-theme-link-color, #2481cc);
-  --color-tg-button: var(--tg-theme-button-color, #2481cc);
-  --color-tg-button-text: var(--tg-theme-button-text-color, #ffffff);
-  --color-tg-secondary: var(--tg-theme-secondary-bg-color, #f4f4f5);
+/* usfull brand — committed dark identity (founder direction).
+   Every screen styles through these tokens, so the whole app
+   repaints from this one place. Warm near-black ground, terracotta
+   accent, muted warm-grey for hints and hairline borders. */
+@theme {
+  --color-tg-bg: #0e0d0c; /* warm near-black background */
+  --color-tg-text: #f5f3f1; /* primary text */
+  --color-tg-hint: #8a8790; /* muted text + hairline borders */
+  --color-tg-link: #ec9a5e; /* terracotta accent / links */
+  --color-tg-button: #ec9a5e; /* primary button fill */
+  --color-tg-button-text: #211106; /* text on the accent */
+  --color-tg-secondary: #17151a; /* card / raised surfaces */
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 
 body {
