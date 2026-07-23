@@ -40,15 +40,25 @@ bun run dev            # NestJS watch mode, bot polls Telegram
 
 ```
 src/
-├── config/       loadConfig() + global AppConfigModule (APP_CONFIG token)
-├── db/           global DbModule (SUPABASE token → SupabaseClient<Database>), generated types.ts
-├── users/        UsersService: upsertFromTelegram, completeOnboarding, getByTgId
-├── onboarding/   pure state machine: lang → level → goal → availability → done
-├── i18n/         t(lang, key), uz/en messages
-├── bot/          BotService: grammY wiring (session, ob:* callbacks), polling on bootstrap
-├── health/       GET /health → { ok: true }
+├── config/         loadConfig() + global AppConfigModule (APP_CONFIG token)
+├── db/             global DbModule (SUPABASE token → SupabaseClient<Database>), generated types.ts
+├── auth/           initData HMAC validation + TelegramAuthGuard
+├── users/          UsersService: upsertFromTelegram, completeOnboarding, getByTgId, getById, listAdmins
+├── onboarding/     pure state machine: lang → level → goal → availability → done
+├── i18n/           t(lang, key) + tf(lang, key, vars), uz/en messages
+├── bot/            BotService: grammY wiring (onboarding, /teacher, /premium, referral capture), polling on bootstrap
+├── exam-questions/ IELTS question bank (teacher/admin publish)
+├── community/      Q&A + moderation/ (reports, admin remove)
+├── matches/        partner catalog + match requests
+├── teachers/       TeachersService + pure apply-machine (shared by bot & lessons)
+├── lessons/        teachers/slots/bookings/admin controllers + reminder cron
+├── billing/        Stars invoices, idempotent payments, expiry cron
+├── coach/          Gold coach assignment (admin)
+├── referrals/      invite codes, reward tiers, summary
+├── profile/        overview (streak, progress, lesson history) + pure computeStreak
+├── health/         GET /health → { ok: true }
 ├── app.module.ts
-└── main.ts       webhook mode mounts grammY webhookCallback on POST /webhook
+└── main.ts         webhook mode mounts grammY webhookCallback on POST /webhook
 ```
 
 Rules of the codebase:
@@ -104,7 +114,7 @@ Each user gets a share link `t.me/<BOT_USERNAME>?start=ref_<code>`. When a **bra
 
 ## Tests
 
-Jest specs live in `test/*.spec.ts` (29 tests): config loading, i18n completeness, onboarding state machine, UsersService / ExamQuestionsService / CommunityService (mocked Supabase chain), initData validation, `/api/me` controller, health endpoint (supertest).
+Jest specs live in `test/*.spec.ts` (24 suites, 93 tests): config, i18n, onboarding + teacher-apply state machines, `computeStreak`, initData validation, and every service/controller with a mocked Supabase chain (users, exam-questions, community, moderation, matches, teachers, bookings, billing, coach, referrals, profile) plus the health endpoint (supertest). Run one file with `bunx jest test/streak.spec.ts`.
 
 ## Reminders & billing cron
 

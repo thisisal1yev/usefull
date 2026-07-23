@@ -35,12 +35,12 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 ## Structure
 
 - [`server/`](server/README.md) — NestJS backend (bot, API, config, Supabase access) — see its README for architecture, env vars and scripts
-- [`webapp/`](webapp/README.md) — Telegram Mini App (Vite + React + TS + Tailwind v4): question bank + community Q&A, talks to the server via `/api/*`. Live: https://usefull-fawn.vercel.app
+- [`webapp/`](webapp/README.md) — Telegram Mini App (Vite + React + TS + Tailwind v4 + lucide-react): four-tab dark app, talks to the server via `/api/*`. Live: https://usefull-fawn.vercel.app
 - [`deploy/`](deploy/README.md) — VPS deployment: Docker Compose (server + Caddy auto-HTTPS)
-- `supabase/migrations` — SQL schema (10 tables, RLS enabled)
+- `supabase/migrations` — SQL schema (12 tables, RLS enabled)
 - `.github/workflows/ci.yml` — CI: bun install → typecheck → tests on every push/PR
 
-## Roadmap (MVP phases)
+## Roadmap
 
 1. ✅ Bot skeleton, DB schema, onboarding
 2. ✅ Mini App: question bank + community Q&A
@@ -48,3 +48,7 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 4. ✅ Teachers, slots, booking, free-tier limit
 5. ✅ Telegram Stars payments, Premium/Gold, coach
 6. ✅ Moderation, admin content, launch hardening
+7. ✅ Referrals (invite → Premium days)
+8. ✅ Redesign — dark brand look, four-tab layout, profile features (streak, progress, history)
+
+Remaining: deploy the server to a VPS ([deploy/CHECKLIST.md](deploy/CHECKLIST.md)) and set `VITE_API_URL` on Vercel so the Mini App loads live data.
