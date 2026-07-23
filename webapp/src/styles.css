@@ -21,3 +21,13 @@
 body {
   @apply bg-tg-bg text-tg-text font-sans;
 }
+
+/* Primary fills carry the warm terracotta gradient from the founder
+   direction. `bg-tg-button` sets the base color; this layers the
+   gradient on top, so every accent button and active chip picks it
+   up without touching a single component. */
+@layer utilities {
+  .bg-tg-button {
+    background-image: linear-gradient(135deg, #f2ac6c 0%, #dd7a39 100%);
+  }
+}
