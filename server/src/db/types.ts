@@ -249,6 +249,42 @@ export type Database = {
           },
         ]
       }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          invited_id: string
+          referrer_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invited_id: string
+          referrer_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invited_id?: string
+          referrer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_invited_id_fkey"
+            columns: ["invited_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
           created_at: string
@@ -397,6 +433,8 @@ export type Database = {
           onboarded: boolean
           plan: Database["public"]["Enums"]["plan_tier"]
           plan_expires_at: string | null
+          ref_code: string | null
+          ref_rewarded_count: number
           role: Database["public"]["Enums"]["user_role"]
           tg_id: number
           ui_lang: Database["public"]["Enums"]["ui_lang"]
@@ -412,6 +450,8 @@ export type Database = {
           onboarded?: boolean
           plan?: Database["public"]["Enums"]["plan_tier"]
           plan_expires_at?: string | null
+          ref_code?: string | null
+          ref_rewarded_count?: number
           role?: Database["public"]["Enums"]["user_role"]
           tg_id: number
           ui_lang?: Database["public"]["Enums"]["ui_lang"]
@@ -427,6 +467,8 @@ export type Database = {
           onboarded?: boolean
           plan?: Database["public"]["Enums"]["plan_tier"]
           plan_expires_at?: string | null
+          ref_code?: string | null
+          ref_rewarded_count?: number
           role?: Database["public"]["Enums"]["user_role"]
           tg_id?: number
           ui_lang?: Database["public"]["Enums"]["ui_lang"]
