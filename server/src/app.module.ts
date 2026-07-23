@@ -10,6 +10,7 @@ import { CommunityModule } from './community/community.module'
 import { MatchesModule } from './matches/matches.module'
 import { LessonsModule } from './lessons/lessons.module'
 import { BillingModule } from './billing/billing.module'
+import { CoachModule } from './coach/coach.module'
 import { HealthController } from './health/health.controller'
 
 @Module({
@@ -17,7 +18,7 @@ import { HealthController } from './health/health.controller'
     ScheduleModule.forRoot(),
     AppConfigModule, DbModule, UsersModule, BotModule,
     AuthModule, ExamQuestionsModule, CommunityModule, MatchesModule,
-    LessonsModule, BillingModule,
+    LessonsModule, BillingModule, CoachModule,
   ],
   controllers: [HealthController],
 })
