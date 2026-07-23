@@ -26,9 +26,13 @@ interface Overview {
 export default function ProfileScreen({ onOpenLessons }: { onOpenLessons?: () => void }) {
   const [me, setMe] = useState<Me | null>(null)
   const [ov, setOv] = useState<Overview | null>(null)
+  const [failed, setFailed] = useState(false)
 
   const load = () => {
-    api<Me>('/api/me').then(setMe).catch(() => setMe(null))
+    setFailed(false)
+    api<Me>('/api/me')
+      .then((m) => setMe(m))
+      .catch(() => setFailed(true))
   }
 
   useEffect(load, [])
@@ -46,6 +50,19 @@ export default function ProfileScreen({ onOpenLessons }: { onOpenLessons?: () =>
     tg.openInvoice?.(link, (status) => {
       if (status === 'paid') load()
     })
+  }
+
+  if (failed) {
+    return (
+      <div className="px-6 py-10 text-center text-sm text-tg-hint">
+        Ma'lumotni yuklab bo'lmadi.
+        <br />
+        Ilovani Telegram orqali oching.
+        <button className="mt-4 block w-full rounded-xl bg-tg-button p-3 font-semibold text-tg-button-text" onClick={load}>
+          Qayta urinish
+        </button>
+      </div>
+    )
   }
 
   if (me === null) {
