@@ -17,14 +17,25 @@ const BENEFITS: Record<Me['plan'], string> = {
   gold: 'Haftasiga 3 ta dars + shaxsiy murabbiy',
 }
 
+interface Overview {
+  streak: number
+  progress: { lessons: number; partners: number }
+  history: Array<{ teacher: string; starts_at: string }>
+}
+
 export default function ProfileScreen({ onOpenLessons }: { onOpenLessons?: () => void }) {
   const [me, setMe] = useState<Me | null>(null)
+  const [ov, setOv] = useState<Overview | null>(null)
 
   const load = () => {
     api<Me>('/api/me').then(setMe).catch(() => setMe(null))
   }
 
   useEffect(load, [])
+
+  useEffect(() => {
+    api<Overview>('/api/profile').then(setOv).catch(() => setOv(null))
+  }, [])
 
   const buy = async (tier: 'premium' | 'gold') => {
     const { link } = await api<{ link: string }>('/api/billing/invoice', {
@@ -62,6 +73,13 @@ export default function ProfileScreen({ onOpenLessons }: { onOpenLessons?: () =>
         </div>
       </div>
 
+      {/* streak line */}
+      <div className="mt-4 text-center text-sm text-tg-hint">
+        {ov && ov.streak > 0
+          ? `🔥 ${ov.streak} kunlik seriya`
+          : "🔥 Seriya yo'q — bugun mashqni boshlang"}
+      </div>
+
       {/* plan card */}
       <div className="mt-6 rounded-2xl bg-tg-secondary p-4">
         <div className="text-sm text-tg-hint">Sizning tarifingiz</div>
@@ -72,6 +90,24 @@ export default function ProfileScreen({ onOpenLessons }: { onOpenLessons?: () =>
           </div>
         )}
       </div>
+
+      {/* progress tiles */}
+      {ov && (
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="rounded-2xl bg-tg-secondary p-3 text-center">
+            <div className="font-mono text-xl font-bold">{ov.streak}</div>
+            <div className="mt-1 text-xs text-tg-hint">Seriya</div>
+          </div>
+          <div className="rounded-2xl bg-tg-secondary p-3 text-center">
+            <div className="font-mono text-xl font-bold">{ov.progress.lessons}</div>
+            <div className="mt-1 text-xs text-tg-hint">Darslar</div>
+          </div>
+          <div className="rounded-2xl bg-tg-secondary p-3 text-center">
+            <div className="font-mono text-xl font-bold">{ov.progress.partners}</div>
+            <div className="mt-1 text-xs text-tg-hint">Sheriklar</div>
+          </div>
+        </div>
+      )}
 
       {/* upgrade actions */}
       {me.plan === 'free' && (
@@ -123,6 +159,24 @@ export default function ProfileScreen({ onOpenLessons }: { onOpenLessons?: () =>
           <span className="text-tg-hint">›</span>
         </a>
       </div>
+
+      {/* lesson history */}
+      {ov && ov.history.length > 0 && (
+        <>
+          <div className="mt-6 mb-2 font-mono text-xs uppercase tracking-wider text-tg-hint">
+            Darslar tarixi
+          </div>
+          {ov.history.map((h, i) => (
+            <div
+              className="mb-2 flex items-center justify-between rounded-xl bg-tg-secondary p-3"
+              key={i}
+            >
+              <span className="text-sm">{h.teacher}</span>
+              <span className="font-mono text-xs text-tg-hint">{h.starts_at.slice(0, 10)}</span>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   )
 }
