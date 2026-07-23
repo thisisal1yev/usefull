@@ -3,7 +3,7 @@ FROM oven/bun:1 AS build
 WORKDIR /app
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
-COPY tsconfig.json nest-cli.json ./
+COPY tsconfig.json tsconfig.build.json nest-cli.json ./
 COPY src ./src
 RUN bun run build
 
