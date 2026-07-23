@@ -14,7 +14,7 @@ const PLAN_LABEL: Record<Me['plan'], string> = { free: 'Free', premium: 'Premium
 const BENEFITS: Record<Me['plan'], string> = {
   free: 'Haftasiga 1 ta bepul dars',
   premium: 'Haftasiga 3 ta dars',
-  gold: "Haftasiga 3 ta dars + shaxsiy murabbiy",
+  gold: 'Haftasiga 3 ta dars + shaxsiy murabbiy',
 }
 
 export default function ProfileScreen() {
@@ -41,31 +41,49 @@ export default function ProfileScreen() {
     return <div className="px-4 py-8 text-center text-tg-hint">Yuklanmoqda…</div>
   }
 
+  const initial = me.first_name.trim().charAt(0).toUpperCase() || '🎙'
+
   return (
-    <div className="px-3 py-2">
-      <div className="mt-2 rounded-xl bg-tg-secondary p-4">
-        <div className="text-lg font-semibold">{me.first_name}</div>
-        <div className="mt-2 inline-block rounded-full bg-tg-button px-3 py-1 text-sm font-semibold text-tg-button-text">
+    <div className="px-4 py-6">
+      {/* header — centered avatar, name, plan badge */}
+      <div className="flex flex-col items-center gap-3">
+        <div className="grid h-20 w-20 place-items-center rounded-full bg-tg-button text-3xl font-bold text-tg-button-text">
+          {initial}
+        </div>
+        <div className="text-xl font-bold">{me.first_name}</div>
+        <div
+          className={`rounded-full px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wide ${
+            me.plan === 'free'
+              ? 'border border-tg-hint/40 text-tg-hint'
+              : 'bg-tg-button text-tg-button-text'
+          }`}
+        >
           {PLAN_LABEL[me.plan]}
         </div>
-        <div className="mt-2 text-sm text-tg-hint">{BENEFITS[me.plan]}</div>
+      </div>
+
+      {/* plan card */}
+      <div className="mt-6 rounded-2xl bg-tg-secondary p-4">
+        <div className="text-sm text-tg-hint">Sizning tarifingiz</div>
+        <div className="mt-1 text-[15px]">{BENEFITS[me.plan]}</div>
         {me.plan_expires_at && (
-          <div className="mt-1 text-xs text-tg-hint">
+          <div className="mt-2 font-mono text-xs text-tg-hint">
             Amal qiladi: {me.plan_expires_at.slice(0, 10)}
           </div>
         )}
       </div>
 
+      {/* upgrade actions */}
       {me.plan === 'free' && (
         <>
           <button
-            className="mt-3 w-full rounded-lg bg-tg-button p-3 text-[15px] font-semibold text-tg-button-text"
+            className="mt-3 w-full rounded-xl bg-tg-button p-3.5 text-[15px] font-semibold text-tg-button-text"
             onClick={() => buy('premium')}
           >
             Premium olish ⭐ — haftasiga 3 ta dars
           </button>
           <button
-            className="mt-2 w-full rounded-lg bg-tg-button p-3 text-[15px] font-semibold text-tg-button-text"
+            className="mt-2 w-full rounded-xl bg-tg-button p-3.5 text-[15px] font-semibold text-tg-button-text"
             onClick={() => buy('gold')}
           >
             Gold olish 👑 — Premium + murabbiy
@@ -74,14 +92,16 @@ export default function ProfileScreen() {
       )}
       {me.plan === 'premium' && (
         <button
-          className="mt-3 w-full rounded-lg bg-tg-button p-3 text-[15px] font-semibold text-tg-button-text"
+          className="mt-3 w-full rounded-xl bg-tg-button p-3.5 text-[15px] font-semibold text-tg-button-text"
           onClick={() => buy('gold')}
         >
           Gold olish 👑 — shaxsiy murabbiy
         </button>
       )}
       {me.plan === 'gold' && (
-        <div className="mt-3 rounded-xl bg-tg-secondary p-3 text-center text-sm">Gold aktiv 👑</div>
+        <div className="mt-3 rounded-2xl bg-tg-secondary p-4 text-center text-sm">
+          Gold aktiv 👑 — rahmat!
+        </div>
       )}
     </div>
   )
