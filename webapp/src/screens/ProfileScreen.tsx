@@ -17,7 +17,7 @@ const BENEFITS: Record<Me['plan'], string> = {
   gold: 'Haftasiga 3 ta dars + shaxsiy murabbiy',
 }
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ onOpenLessons }: { onOpenLessons?: () => void }) {
   const [me, setMe] = useState<Me | null>(null)
 
   const load = () => {
@@ -103,6 +103,26 @@ export default function ProfileScreen() {
           Gold aktiv 👑 — rahmat!
         </div>
       )}
+
+      {/* navigation rows — founder list style */}
+      <div className="mt-6 overflow-hidden rounded-2xl bg-tg-secondary">
+        <button
+          className="flex w-full items-center gap-3 border-b border-tg-hint/15 p-4 text-left"
+          onClick={onOpenLessons}
+        >
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-tg-bg text-base">📚</span>
+          <span className="flex-1 text-[15px]">Ustozlar bilan darslar</span>
+          <span className="text-tg-hint">›</span>
+        </button>
+        <a
+          className="flex w-full items-center gap-3 p-4"
+          href="https://t.me/usefull_bot"
+        >
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-tg-bg text-base">🛟</span>
+          <span className="flex-1 text-[15px]">Yordam</span>
+          <span className="text-tg-hint">›</span>
+        </a>
+      </div>
     </div>
   )
 }

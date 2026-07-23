@@ -1,40 +1,25 @@
 import { useEffect, useState } from 'react'
-import type { ComponentType } from 'react'
+import SpeakingScreen from './screens/SpeakingScreen'
 import BankScreen from './screens/BankScreen'
-import QaScreen from './screens/QaScreen'
-import PartnersScreen from './screens/PartnersScreen'
-import MatchesScreen from './screens/MatchesScreen'
-import LessonsScreen from './screens/LessonsScreen'
 import InviteScreen from './screens/InviteScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import AdminScreen from './screens/AdminScreen'
+import LessonsScreen from './screens/LessonsScreen'
 import { api } from './api'
 
-const BASE_TABS = [
-  { id: 'partners', label: 'Sheriklar' },
-  { id: 'matches', label: "So'rovlar" },
-  { id: 'lessons', label: 'Darslar' },
-  { id: 'invite', label: 'Invite' },
-  { id: 'bank', label: 'Savollar' },
-  { id: 'qa', label: 'Q&A' },
-  { id: 'profile', label: 'Profil' },
+// Founder direction: four primary tabs + an admin tab only admins see.
+// Lessons live behind Profile, reachable without cluttering the bar.
+type Screen = 'speaking' | 'bank' | 'invite' | 'profile' | 'admin' | 'lessons'
+
+const TABS = [
+  { id: 'speaking', label: 'speaking' },
+  { id: 'bank', label: 'bank' },
+  { id: 'invite', label: 'invite' },
+  { id: 'profile', label: 'profile' },
 ] as const
 
-type TabId = (typeof BASE_TABS)[number]['id'] | 'admin'
-
-const SCREENS: Record<TabId, ComponentType> = {
-  partners: PartnersScreen,
-  matches: MatchesScreen,
-  lessons: LessonsScreen,
-  invite: InviteScreen,
-  bank: BankScreen,
-  qa: QaScreen,
-  profile: ProfileScreen,
-  admin: AdminScreen,
-}
-
 export default function App() {
-  const [tab, setTab] = useState<TabId>('partners')
+  const [screen, setScreen] = useState<Screen>('speaking')
   const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
@@ -43,30 +28,60 @@ export default function App() {
       .catch(() => setIsAdmin(false))
   }, [])
 
-  const tabs: Array<{ id: TabId; label: string }> = [
-    ...BASE_TABS,
-    ...(isAdmin ? [{ id: 'admin' as const, label: 'Admin' }] : []),
+  const tabs: Array<{ id: Screen; label: string }> = [
+    ...TABS,
+    ...(isAdmin ? [{ id: 'admin' as const, label: 'admin' }] : []),
   ]
-  const Screen = SCREENS[tab]
+  const activeTab = screen === 'lessons' ? 'profile' : screen
+
+  const renderScreen = () => {
+    switch (screen) {
+      case 'speaking':
+        return <SpeakingScreen />
+      case 'bank':
+        return <BankScreen />
+      case 'invite':
+        return <InviteScreen />
+      case 'profile':
+        return <ProfileScreen onOpenLessons={() => setScreen('lessons')} />
+      case 'admin':
+        return <AdminScreen />
+      case 'lessons':
+        return <LessonsScreen />
+    }
+  }
 
   return (
-    <div>
-      <div className="sticky top-0 flex overflow-x-auto border-b border-tg-hint/30 bg-tg-bg">
+    <div className="min-h-screen pb-16">
+      {screen === 'lessons' && (
+        <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-tg-hint/25 bg-tg-bg px-3 py-3">
+          <button className="text-tg-link" onClick={() => setScreen('profile')}>
+            ‹ Orqaga
+          </button>
+          <span className="font-semibold">Ustozlar</span>
+        </div>
+      )}
+
+      {renderScreen()}
+
+      <nav className="fixed inset-x-0 bottom-0 flex justify-around border-t border-tg-hint/25 bg-tg-bg pt-2 pb-3">
         {tabs.map((t) => (
           <button
             key={t.id}
-            className={`shrink-0 px-3 py-3 text-[14px] ${
-              tab === t.id
-                ? '-mb-px border-b-2 border-tg-link font-semibold text-tg-link'
-                : 'text-tg-hint'
+            onClick={() => setScreen(t.id)}
+            className={`text-[13px] ${
+              activeTab === t.id ? 'font-semibold text-tg-text' : 'text-tg-hint'
             }`}
-            onClick={() => setTab(t.id)}
           >
+            <span
+              className={`mx-auto mb-1 block h-1 w-1 rounded-full ${
+                activeTab === t.id ? 'bg-tg-link' : 'bg-transparent'
+              }`}
+            />
             {t.label}
           </button>
         ))}
-      </div>
-      <Screen />
+      </nav>
     </div>
   )
 }
