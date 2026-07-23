@@ -1,0 +1,25 @@
+# Use this instead of docker-compose.yml when the VPS already runs another
+# project with its own reverse proxy holding ports 80/443. This starts ONLY
+# the usfull server, bound to localhost — your existing nginx/Caddy/Traefik
+# terminates HTTPS for a subdomain and proxies to it. Nothing else on the box
+# is touched.
+#
+#   docker compose -f docker-compose.behind-proxy.yml up -d --build
+#
+# Then point your existing proxy at http://127.0.0.1:${SERVER_PORT:-3001}
+# for api.yourdomain, and set BOT_MODE=webhook in .env.
+
+services:
+  server:
+    build: ../server
+    env_file: .env
+    restart: unless-stopped
+    ports:
+      # bound to loopback only — reachable by the local reverse proxy, not the internet
+      - "127.0.0.1:${SERVER_PORT:-3001}:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
