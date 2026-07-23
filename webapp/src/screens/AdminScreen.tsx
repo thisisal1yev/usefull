@@ -9,13 +9,24 @@ export interface PendingTeacher {
   user: { first_name: string; username: string | null }
 }
 
+export interface GoldLearner {
+  id: string
+  first_name: string
+  username: string | null
+}
+
 export default function AdminScreen() {
   const [items, setItems] = useState<PendingTeacher[] | null>(null)
+  const [gold, setGold] = useState<GoldLearner[] | null>(null)
+  const [coachDrafts, setCoachDrafts] = useState<Record<string, string>>({})
 
   const load = () => {
     api<PendingTeacher[]>('/api/admin/teachers?status=pending')
       .then(setItems)
       .catch(() => setItems([]))
+    api<GoldLearner[]>('/api/admin/gold')
+      .then(setGold)
+      .catch(() => setGold([]))
   }
 
   useEffect(load, [])
@@ -26,6 +37,16 @@ export default function AdminScreen() {
       body: JSON.stringify({ status }),
     }).catch(() => undefined)
     setItems((list) => (list ?? []).filter((t) => t.user_id !== userId))
+  }
+
+  const assignCoach = async (learnerId: string) => {
+    const coachUsername = (coachDrafts[learnerId] ?? '').trim()
+    if (!coachUsername) return
+    await api('/api/admin/coach', {
+      method: 'POST',
+      body: JSON.stringify({ learnerId, coachUsername }),
+    }).catch(() => undefined)
+    setGold((list) => (list ?? []).filter((g) => g.id !== learnerId))
   }
 
   if (items === null) {
@@ -65,6 +86,32 @@ export default function AdminScreen() {
                 Rad etish
               </button>
             </div>
+          </div>
+        ))
+      )}
+
+      <h2 className="mt-4 mb-1 text-sm font-semibold text-tg-hint">Gold: murabbiy kerak</h2>
+      {(gold ?? []).length === 0 ? (
+        <div className="py-4 text-center text-tg-hint">Hammaga murabbiy biriktirilgan</div>
+      ) : (
+        (gold ?? []).map((g) => (
+          <div className="mb-2 rounded-xl bg-tg-secondary p-3" key={g.id}>
+            <div className="font-semibold">
+              <span>{g.first_name}</span>
+              {g.username && <span className="text-tg-hint"> · @{g.username}</span>}
+            </div>
+            <input
+              className="mt-2 w-full rounded-lg border border-tg-hint/50 bg-tg-bg p-2.5 text-tg-text placeholder:text-tg-hint"
+              placeholder="murabbiy @username"
+              value={coachDrafts[g.id] ?? ''}
+              onChange={(e) => setCoachDrafts((d) => ({ ...d, [g.id]: e.target.value }))}
+            />
+            <button
+              className="mt-2 w-full rounded-lg bg-tg-button p-2.5 text-sm font-semibold text-tg-button-text"
+              onClick={() => assignCoach(g.id)}
+            >
+              Biriktirish
+            </button>
           </div>
         ))
       )}
