@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Mic, BookOpen, Gift, User, Shield, type LucideIcon } from 'lucide-react'
 import SpeakingScreen from './screens/SpeakingScreen'
 import BankScreen from './screens/BankScreen'
 import InviteScreen from './screens/InviteScreen'
@@ -11,11 +12,17 @@ import { api } from './api'
 // Lessons live behind Profile, reachable without cluttering the bar.
 type Screen = 'speaking' | 'bank' | 'invite' | 'profile' | 'admin' | 'lessons'
 
-const TABS = [
-  { id: 'speaking', label: 'speaking' },
-  { id: 'bank', label: 'bank' },
-  { id: 'invite', label: 'invite' },
-  { id: 'profile', label: 'profile' },
+interface Tab {
+  id: Screen
+  label: string
+  Icon: LucideIcon
+}
+
+const TABS: readonly Tab[] = [
+  { id: 'speaking', label: 'speaking', Icon: Mic },
+  { id: 'bank', label: 'bank', Icon: BookOpen },
+  { id: 'invite', label: 'invite', Icon: Gift },
+  { id: 'profile', label: 'profile', Icon: User },
 ] as const
 
 export default function App() {
@@ -28,9 +35,9 @@ export default function App() {
       .catch(() => setIsAdmin(false))
   }, [])
 
-  const tabs: Array<{ id: Screen; label: string }> = [
+  const tabs: Tab[] = [
     ...TABS,
-    ...(isAdmin ? [{ id: 'admin' as const, label: 'admin' }] : []),
+    ...(isAdmin ? [{ id: 'admin' as const, label: 'admin', Icon: Shield }] : []),
   ]
   const activeTab = screen === 'lessons' ? 'profile' : screen
 
@@ -65,22 +72,21 @@ export default function App() {
       {renderScreen()}
 
       <nav className="fixed inset-x-0 bottom-0 flex justify-around border-t border-tg-hint/25 bg-tg-bg pt-2 pb-3">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setScreen(t.id)}
-            className={`text-[13px] ${
-              activeTab === t.id ? 'font-semibold text-tg-text' : 'text-tg-hint'
-            }`}
-          >
-            <span
-              className={`mx-auto mb-1 block h-1 w-1 rounded-full ${
-                activeTab === t.id ? 'bg-tg-link' : 'bg-transparent'
+        {tabs.map((t) => {
+          const active = activeTab === t.id
+          return (
+            <button
+              key={t.id}
+              onClick={() => setScreen(t.id)}
+              className={`flex flex-col items-center gap-1 text-[11px] ${
+                active ? 'font-semibold text-tg-link' : 'text-tg-hint'
               }`}
-            />
-            {t.label}
-          </button>
-        ))}
+            >
+              <t.Icon size={21} strokeWidth={active ? 2.4 : 1.8} />
+              {t.label}
+            </button>
+          )
+        })}
       </nav>
     </div>
   )
