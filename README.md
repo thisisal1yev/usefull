@@ -41,5 +41,5 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 2. ✅ Mini App: question bank + community Q&A
 3. ✅ Partner matching
 4. ✅ Teachers, slots, booking, free-tier limit
-5. Telegram Stars payments, Premium/Gold, coach
+5. ✅ Telegram Stars payments, Premium/Gold, coach
 6. Testing & launch

@@ -5,6 +5,7 @@ import QaScreen from './screens/QaScreen'
 import PartnersScreen from './screens/PartnersScreen'
 import MatchesScreen from './screens/MatchesScreen'
 import LessonsScreen from './screens/LessonsScreen'
+import ProfileScreen from './screens/ProfileScreen'
 import AdminScreen from './screens/AdminScreen'
 import { api } from './api'
 
@@ -14,6 +15,7 @@ const BASE_TABS = [
   { id: 'lessons', label: 'Darslar' },
   { id: 'bank', label: 'Savollar' },
   { id: 'qa', label: 'Q&A' },
+  { id: 'profile', label: 'Profil' },
 ] as const
 
 type TabId = (typeof BASE_TABS)[number]['id'] | 'admin'
@@ -24,6 +26,7 @@ const SCREENS: Record<TabId, ComponentType> = {
   lessons: LessonsScreen,
   bank: BankScreen,
   qa: QaScreen,
+  profile: ProfileScreen,
   admin: AdminScreen,
 }
 

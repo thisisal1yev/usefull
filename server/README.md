@@ -23,6 +23,7 @@ bun run dev            # NestJS watch mode, bot polls Telegram
 | `PORT` | HTTP port, default `3000` |
 | `WEBHOOK_SECRET` | Secret token for Telegram webhook validation (production) |
 | `WEBAPP_URL` | Optional HTTPS URL of the deployed Mini App; when set the bot installs a `web_app` menu button and adds an "open app" button after onboarding |
+| `PREMIUM_STARS` / `GOLD_STARS` | Subscription prices in Telegram Stars (defaults 350 / 1000) |
 
 ## Scripts
 
@@ -79,6 +80,9 @@ All `/api/*` endpoints are protected by `TelegramAuthGuard`: the client (the Min
 | `GET /api/bookings` / `DELETE /api/bookings/:id` | My lessons / cancel (frees the slot, notifies the other side) |
 | `GET /api/admin/teachers?status=` | Admin: list teacher applications |
 | `POST /api/admin/teachers/:userId/status` | Admin: approve/reject (promotes role, notifies applicant) |
+| `POST /api/billing/invoice` | Create a Telegram Stars invoice link `{ tier }` (XTR) for the Mini App |
+| `GET /api/admin/gold` | Admin: Gold subscribers without a coach |
+| `POST /api/admin/coach` | Admin: assign a coach `{ learnerId, coachUsername }` — notifies both sides |
 | `GET /api/partners?level=B1` | Partner catalog: onboarded users except self, optional level filter (no `tg_id` exposed) |
 | `POST /api/matches` | Send a match request `{ toUserId }` — 409 on duplicate; notifies the target via the bot |
 | `GET /api/matches` | `{ incoming, outgoing }` with embedded profiles |
@@ -88,9 +92,11 @@ All `/api/*` endpoints are protected by `TelegramAuthGuard`: the client (the Min
 
 Jest specs live in `test/*.spec.ts` (29 tests): config loading, i18n completeness, onboarding state machine, UsersService / ExamQuestionsService / CommunityService (mocked Supabase chain), initData validation, `/api/me` controller, health endpoint (supertest).
 
-## Reminders
+## Reminders & billing cron
 
 `RemindersService` (`@nestjs/schedule`, cron every 10 min) sends lesson reminders to both sides when a booking enters the 24-hour and 1-hour windows; `bookings.reminded_24h` / `reminded_1h` flags guarantee each fires once.
+
+`BillingCronService` (hourly) downgrades expired plans to `free` and notifies the user. Payments are **idempotent**: `subscriptions.stars_tx_id` is unique, so a re-delivered `successful_payment` neither duplicates the subscription nor extends the plan twice. Purchase works both from the bot (`/premium`) and the Mini App (`POST /api/billing/invoice` → `tg.openInvoice`).
 
 ## Production webhook
 
