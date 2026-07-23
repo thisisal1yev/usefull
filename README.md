@@ -10,6 +10,8 @@
 
 Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS on). Payments: **Telegram Stars**. UI languages: **uz / en**.
 
+**MVP feature-complete** — all 6 phases done. Launch runbook: [deploy/CHECKLIST.md](deploy/CHECKLIST.md).
+
 ## Setup
 
 1. `cd server && bun install` (project uses [Bun](https://bun.sh) as package manager/runner)
@@ -24,6 +26,7 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 
 - Dev: `bun run dev`
 - Tests: `bun run test`
+- Smoke test (against a running server): `bun run smoke`
 - Production: `bun run build && bun run start`, then register the webhook:
   `https://api.telegram.org/bot<TOKEN>/setWebhook?url=<HTTPS_URL>/webhook&secret_token=<WEBHOOK_SECRET>`
 
@@ -42,4 +45,4 @@ Stack: **NestJS** (Express platform) + **grammY** + **Supabase** (Postgres, RLS 
 3. ✅ Partner matching
 4. ✅ Teachers, slots, booking, free-tier limit
 5. ✅ Telegram Stars payments, Premium/Gold, coach
-6. Testing & launch
+6. ✅ Moderation, admin content, launch hardening

@@ -6,7 +6,8 @@
     "build": "nest build",
     "dev": "nest start --watch",
     "start": "node dist/main.js",
-    "test": "jest"
+    "test": "jest",
+    "smoke": "bun scripts/smoke.ts"
   },
   "jest": {
     "moduleFileExtensions": [
